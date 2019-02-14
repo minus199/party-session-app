@@ -23,7 +23,7 @@
     const $payload = $msgItem.querySelector(".socket-event-payload");
     for (k in data.payload) {
       $payload.classList.add("event-payload-item");
-      $payload.innerHTML = `<span >${k}</span><span>${data.payload[k]}</span>`;
+      $payload.innerHTML = `<span title="${k}">${data.payload[k]}</span>`;
     }
 
     setInterval(() => $msgItem.querySelector(".socket-event-timestamp").innerText = moment(data.timestamp).fromNow(), 1000);
