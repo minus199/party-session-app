@@ -1,0 +1,44 @@
+<html>
+
+<head>
+	<title>Party Session</title>
+	<link rel="stylesheet" href="/stylesheets/style.css" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no" />
+</head>
+
+<body>
+	<div id="login-form" class="d-none">
+		<input type="text" placeholder="Username" id="login-username" />
+		<input type="password" id="login-password" placeholder="Password"  />
+		<button id="do-login">Login</button>
+	</div>
+
+
+	<h1 id="connected-user"></h1>
+
+	<div id="menu" class="d-none">
+		<button onclick="getProfile()">Profile</button>
+		<button onclick="getFriends()">My Friends</button>
+		<button id="connect" onclick="connect()">Subscribe</button>
+	</div>
+
+	<div id="social">
+		<span id="connected-clients" class="d-none">0</span>
+		<input id="broadcast" class="d-none" type="text" placeholder="Type something...." />
+		<div id="msgs"></div>
+	</div>
+
+	<div id="incoming-msg-template" class="d-none msg-item">
+		<div class="socket-event socket-event-client"></div>
+		<div class="socket-event socket-event-type"></div>
+		<div class="socket-event socket-event-payload"></div>
+		<div class="socket-event socket-event-timestamp"></div>
+		<div class="num-of-likes" class="d-none">0</div>
+	</div>
+
+	<script src="javascripts/me-controller.js"></script>
+	<script src="javascripts/subscribe-notifications.js"></script>
+</body>
+
+</html>
