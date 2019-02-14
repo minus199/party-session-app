@@ -26,7 +26,7 @@
       $payload.innerHTML = `<span >${k}</span><span>${data.payload[k]}</span>`;
     }
 
-    $msgItem.querySelector(".socket-event-timestamp").innerText = data.timestamp;
+    setInterval(() => $msgItem.querySelector(".socket-event-timestamp").innerText = moment(data.timestamp).fromNow(), 1000);
 
     document.querySelector("#msgs").prepend($msgItem)
     $msgItem.classList.remove("d-none");

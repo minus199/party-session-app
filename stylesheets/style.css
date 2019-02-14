@@ -10,20 +10,9 @@ a {
   border: 1px black solid;
 }
 
-
-.d-none {
-  display: none;
-}
-
 div#menu * {
   display: inline-flex;
   border-right: 1px black solid;
-
-}
-
-.num-of-likes{
-position: relative;
-left: 95%;
 }
 
 .num-of-likes::before {
@@ -42,17 +31,4 @@ left: 95%;
 
 .socket-event::before{
   margin-right: 5px;
-}
-
-.socket-event-type::before {
-  content: "type";
-  
-}
-
-.socket-event-payload::before {
-  content: "payload";
-}
-
-.socket-event-timestamp::before {
-  content: "timestamp";
 }
