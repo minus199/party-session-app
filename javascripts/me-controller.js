@@ -8,7 +8,7 @@
     const auth = `Basic ${btoa(`${uname.value}:${pword.value}`)}`;
     uname.value = "";
     pword.value = "";
-    return fetch("http://localhost:3000/login", {
+    return fetch(route("login"), {
       method: "POST",
       headers: new Headers({
         Authorization: auth
@@ -20,13 +20,14 @@
 {
   const $loginForm = document.querySelector("#login-form");
   const $menu = document.querySelector("#menu");
+
   function setContent() {
     getSessionData().then(sessData => {
-
       if (sessData.isLoggedIn) {
-        document.querySelector("#connected-user").innerText = `Hello, ${sessData.userName}`
+        document.querySelector("#online-user").innerText = `Hello, ${sessData.userName}`
         $loginForm.classList.add("d-none");
         $menu.classList.remove("d-none");
+        localStorage.setItem("session_data", JSON.stringify(sessData));
       } else {
         $loginForm.classList.remove("d-none");
         $menu.classList.add("d-none");
@@ -36,13 +37,14 @@
 }
 
 function getProfile() {
-  return fetch("http://localhost:3000/me/profile").then(response => {
+  return fetch(route("me/profile")).then(response => {
     if (!response.ok) throw new Error(response.status);
     return response.json();
   });
 }
 
 function getSessionData() {
-  return fetch("http://localhost:3000/login-status").then(response => response.json())
+  return fetch(route("login-status")).then(response => response.json())
 }
+
 setContent();
