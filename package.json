@@ -1,0 +1,26 @@
+{
+  "name": "party-session-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/minus199/party-session-app.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/minus199/party-session-app/issues"
+  },
+  "homepage": "https://github.com/minus199/party-session-app#readme",
+  "dependencies": {
+    "bootstrap": "^4.3.1",
+    "jquery": "^3.3.1",
+    "moment": "^2.24.0",
+    "popper.js": "^1.14.7",
+    "uuid": "^3.3.2"
+  }
+}

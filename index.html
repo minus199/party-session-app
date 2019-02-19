@@ -2,52 +2,106 @@
 
 <head>
 	<title>Party Session</title>
-	<link rel="stylesheet" href="/stylesheets/style.css" />
 	<meta charset="utf-8" />
 	<meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no" />
 
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-	      crossorigin="anonymous">
-	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-	        crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-	        crossorigin="anonymous"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-	        crossorigin="anonymous"></script>
-
+	<link rel="stylesheet" href="/stylesheets/style.css" />
+	<link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
+	<script src="node_modules/jquery/dist/jquery.slim.min.js"></script>
+	<script src="node_modules/popper.js/dist/umd/popper.min.js"></script>
+	<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="node_modules/moment/min/moment-with-locales.min.js"></script>
+
+	<script>
+		const SERVER_URL = "//localhost:3000";
+		const route = (path, protocol = "http") => `${protocol}:${SERVER_URL}/${path}`
+		//Bootstrap related -- init all popovers. will happen on content ready
+		$(function () {
+			$('[data-toggle="popover"]').popover()
+		})
+	</script>
 </head>
 
 <body>
+	<!-- Only shown if user is logged out -->
 	<div id="login-form" class="d-none">
 		<input type="text" placeholder="Username" id="login-username" />
 		<input type="password" id="login-password" placeholder="Password" />
 		<button id="do-login">Login</button>
 	</div>
+	<!-- Toast to disply general notifications(mostly from chat) -->
+	<div id="chat-toasts"></div>
 
-	<h1 id="connected-user"></h1>
+	<!-- Top menu - only shown if user is logged in -->
+	<!-- <div  class="d-none fixed-top container-fluid"> -->
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<div id="menu" class="d-none container-fluid">
+			<h1 id="online-user" class="display-4"><span class="online-user-name"></span></h1>
 
-	<div id="menu" class="d-none">
-		<button onclick="getProfile()">Profile</button>
-		<button onclick="getFriends()">My Friends</button>
-		<button id="connect" onclick="connect()">Subscribe</button>
-	</div>
+			<!-- Activity of other users -- only visible if user is connected to socket(requires login) -->
+			<div id="social-indicators" class="social d-none">
+				<span id="connected-clients" data-container="body" data-toggle="popover" data-placement="bottom" data-content="">
+					(<span class="value"></span>)
+				</span>
 
-	<div id="social">
-		<span id="connected-clients" class="d-none">0</span>
-		<input id="broadcast" class="d-none form-control form-control-lg" type="text" placeholder="Type something...." />
+				<em><span id="typing-indicator"><span class="value"></span></span></em>
+			</div>
+
+			<div>
+				<button class="btn btn-primary btn" onclick="getProfile()">Profile</button>
+				<button class="btn btn-primary btn" onclick="getFriends()">My Friends</button>
+				<div class="custom-control custom-switch">
+					<input type="checkbox" class="custom-control-input" id="connect">
+					<label class="custom-control-label" for="connect">Subscribe</label>
+				</div>
+			</div>
+		</div>
+
+	</nav>
+
+	<!-- Main chat component -- only visible if user is connected over socket(requires login) -->
+	<div id="chat" class="social d-none">
 		<ul id="msgs" class="list-group"></ul>
+		<input id="broadcast" class="form-control form-control-md fixed-bottom p-3 rounded" type="text" placeholder="Type something...." />
 	</div>
 
+	<!-- New incoming chat message template -->
 	<ul class="d-none ">
 		<li id="incoming-msg-template" class="msg-item list-group-item d-flex justify-content-between align-items-center">
-			<div class="socket-event socket-event-client"></div>
-			<div class="socket-event socket-event-type"></div>
-			<div class="socket-event socket-event-payload"></div>
-			<div class="socket-event socket-event-timestamp"></div>
-			<span class="badge badge-primary badge-pill num-of-likes">0</span>
+			<div class="chat-message-main-content container-fluid">
+				<div class="row">
+					<div class="col-2">
+						<kbd class="chat-message-item text-capitalize chat-message-src-user"></kbd>
+					</div>
+					<div class="col-4">
+						<em class="chat-message-item chat-message-timestamp text-muted">just now</em>
+					</div>
+					<div class="col"><span class="chat-message-likes-count">0</span></div>
+				</div>
+
+				<div class="row">
+					<div class="col">
+						<span class="chat-message-item chat-message-content text-break"></span>
+					</div>
+				</div>
+			</div>
 		</li>
 	</ul>
+
+	<!-- Chat notification(toast) template -->
+	<div id="chat-notifications-toast-template" class="chat-notification toast d-none" data-delay="5000" role="alert"
+	     aria-live="assertive" aria-atomic="true">
+		<div class="toast-header">
+			<em class="mr-auto chat-notification-content text-capitalize"></em>
+			<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<div class="toast-body">
+			<small class="text-muted">just now</small>
+		</div>
+	</div>
+
 	<script src="javascripts/me-controller.js"></script>
 	<script src="javascripts/subscribe-notifications.js"></script>
 </body>
