@@ -1,11 +1,11 @@
 #menu {
   background: white;
-  box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+  box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
 }
 
 div#chat {
   position: relative;
-  top: 150px;
+  top: 25px;
   margin-bottom: 50px;
 }
 
@@ -21,13 +21,25 @@ div#chat {
   font-size: 1.5em;
 }
 
+.chat-message-likes-count > .value::after {
+  content: " people liked your comment.";
+  font-size: 0.8rem;
+}
+
+#social-indicators {
+  width: 250px;
+}
+
+#social-indicators .value {
+  font-size: 0.8em;
+}
+
 #connected-clients::before {
   content: "👥";
-  font-size: 2em;
 }
 
 input#broadcast {
-  box-shadow: 0px -0.05rem 0.25rem rgba(0,0,0,.075)
+  box-shadow: 0px -0.05rem 0.25rem rgba(0, 0, 0, .4)
 }
 
 .chat-message-item::before {
@@ -38,12 +50,17 @@ span.chat-message-main-content {
   padding: 10px;
 }
 
-.msg-item {
-  margin: 10px;
-  box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+.chat-message-timestamp {
+  font-size: 0.7rem;
+  padding: 10px;
 }
 
-@keyframes glowing {
+.msg-item {
+  margin: 10px;
+  box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
+}
+
+@keyframes glowing-one {
   0% {
     box-shadow: 0 0 -10px #c4a300;
   }
@@ -61,6 +78,28 @@ span.chat-message-main-content {
   }
 }
 
-.glow {
-  animation: glowing 500ms infinite;
+@keyframes glowing-two {
+  0% {
+    box-shadow: 0 0 -10px #007bff;
+  }
+
+  40% {
+    box-shadow: 0 0 20px #007bff;
+  }
+
+  60% {
+    box-shadow: 0 0 20px #007bff;
+  }
+
+  100% {
+    box-shadow: 0 0 -10px #007bff;
+  }
+}
+
+.glow-one {
+  animation: glowing-one 1000ms infinite;
+}
+
+.glow-two {
+  animation: glowing-two 1000ms infinite;
 }
