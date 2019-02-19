@@ -34,29 +34,26 @@
 
 	<!-- Top menu - only shown if user is logged in -->
 	<!-- <div  class="d-none fixed-top container-fluid"> -->
-	<nav class="navbar navbar-expand-lg navbar-light bg-light">
-		<div id="menu" class="d-none container-fluid">
-			<h1 id="online-user" class="display-4"><span class="online-user-name"></span></h1>
+	<nav id="menu" class="d-none container-fluid navbar navbar-expand-lg navbar-light bg-light">
+		<h1 id="online-user" class="display-4"><span class="online-user-name"></span></h1>
 
-			<!-- Activity of other users -- only visible if user is connected to socket(requires login) -->
-			<div id="social-indicators" class="social d-none">
-				<span id="connected-clients" data-container="body" data-toggle="popover" data-placement="bottom" data-content="">
-					(<span class="value"></span>)
-				</span>
+		<!-- Activity of other users -- only visible if user is connected to socket(requires login) -->
+		<div id="social-indicators" class="social d-none">
+			<span id="connected-clients" data-container="body" data-toggle="popover" data-placement="bottom" data-content="">
+				(<span class="value"></span>)
+			</span>
 
-				<em><span id="typing-indicator"><span class="value"></span></span></em>
-			</div>
-
-			<div>
-				<button class="btn btn-primary btn" onclick="getProfile()">Profile</button>
-				<button class="btn btn-primary btn" onclick="getFriends()">My Friends</button>
-				<div class="custom-control custom-switch">
-					<input type="checkbox" class="custom-control-input" id="connect">
-					<label class="custom-control-label" for="connect">Subscribe</label>
-				</div>
-			</div>
+			<em><span id="typing-indicator"><span class="value"></span></span></em>
 		</div>
 
+		<div>
+			<button class="btn btn-primary btn" onclick="getProfile()">Profile</button>
+			<button class="btn btn-primary btn" onclick="getFriends()">My Friends</button>
+			<div class="custom-control custom-switch">
+				<input type="checkbox" class="custom-control-input" id="connect">
+				<label class="custom-control-label" for="connect">Subscribe</label>
+			</div>
+		</div>
 	</nav>
 
 	<!-- Main chat component -- only visible if user is connected over socket(requires login) -->
