@@ -1,3 +1,7 @@
+div#login-form {
+  margin-top: 50px;
+}
+
 #menu {
   background: white;
   box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
@@ -11,17 +15,27 @@ div#chat {
 
 #chat-toasts {
   position: absolute;
-  top: 50;
+  bottom: 50;
   right: 50;
   z-index: 1;
 }
 
-.chat-message-likes-count::before {
-  content: "👍";
-  font-size: 1.5em;
+#typing-indicator {
+  color: tomato;
 }
 
-.chat-message-likes-count > .value::after {
+.chat-message-likes-count {
+  float: right;
+}
+
+.chat-message-likes-count::after {
+  content: "👍";
+  font-size: 1.5em;
+  top: 5px;
+  position: relative;
+}
+
+.chat-message-likes-count>.value::after {
   content: " people liked your comment.";
   font-size: 0.8rem;
 }
@@ -34,8 +48,47 @@ div#chat {
   font-size: 0.8em;
 }
 
-#connected-clients::before {
+
+#connected-users {
+  /* position: absolute; */
+  /* right: 20px; */
+  /* top: 80px; */
+  z-index: 1;
+  opacity: 0.2;
+  transition: opacity .35s ease-in-out;
+  -moz-transition: opacity .35s ease-in-out;
+  -webkit-transition: opacity .35s ease-in-out;
+  max-width: fit-content;
+}
+
+#connected-users-list {
+  position: fixed;
+}
+
+#connected-users:hover {
+  opacity: 1;
+}
+
+#num-connected-users::before {
   content: "👥";
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.online-user>.row {
+  align-items: baseline;
+}
+
+.online-indicator {
+  background-color: green;
+}
+
+.offline-indicator {
+  background-color: red;
 }
 
 input#broadcast {
@@ -50,9 +103,12 @@ span.chat-message-main-content {
   padding: 10px;
 }
 
-.chat-message-timestamp {
+.chat-message-timestamp,
+.connected-at-time {
   font-size: 0.7rem;
-  padding: 10px;
+  /* padding: 10px; */
+  min-width: fit-content;
+  -moz-min-width: fit-content;
 }
 
 .msg-item {

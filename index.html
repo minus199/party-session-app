@@ -8,27 +8,33 @@
 	<link rel="stylesheet" href="/stylesheets/style.css" />
 	<link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
 	<script src="node_modules/jquery/dist/jquery.slim.min.js"></script>
-	<script src="node_modules/popper.js/dist/umd/popper.min.js"></script>
-	<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="node_modules/moment/min/moment-with-locales.min.js"></script>
 
 	<script>
 		const SERVER_URL = "//localhost:3000";
-		const route = (path, protocol = "http") => `${protocol}:${SERVER_URL}/${path}`
-		//Bootstrap related -- init all popovers. will happen on content ready
-		$(function () {
-			$('[data-toggle="popover"]').popover()
-		})
+		const route = (path, protocol = "http") => `${protocol}:${SERVER_URL}/${path}`	
 	</script>
 </head>
 
 <body>
 	<!-- Only shown if user is logged out -->
-	<div id="login-form" class="d-none">
-		<input type="text" placeholder="Username" id="login-username" />
-		<input type="password" id="login-password" placeholder="Password" />
-		<button id="do-login">Login</button>
+	<div id="login-form" class="container form-group d-none">
+		<div class="form-group">
+			<input id="login-username" type="text" class="form-control" aria-describedby="usernameHelp" placeholder="Username">
+		</div>
+		<div class="form-group">
+			<input type="password" class="form-control" id="login-password" placeholder="Password">
+		</div>
+		<div class="form-group form-check">
+			<input type="checkbox" class="form-check-input" id="exampleCheck1">
+			<label class="form-check-label" for="exampleCheck1">Check me out</label>
+		</div>
+
+		<button type="button" id="do-login" class="btn btn-primary btn-lg btn-block">Login</button>
 	</div>
+
+
 	<!-- Toast to disply general notifications(mostly from chat) -->
 	<div id="chat-toasts"></div>
 
@@ -37,21 +43,22 @@
 	<nav id="menu" class="d-none container-fluid navbar navbar-expand-lg navbar-light bg-light">
 		<h1 id="online-user" class="display-4"><span class="online-user-name"></span></h1>
 
-		<!-- Activity of other users -- only visible if user is connected to socket(requires login) -->
-		<div id="social-indicators" class="social d-none">
-			<span id="connected-clients" data-container="body" data-toggle="popover" data-placement="bottom" data-content="">
-				(<span class="value"></span>)
-			</span>
-
-			<em><span id="typing-indicator"><span class="value"></span></span></em>
-		</div>
-
 		<div>
-			<button class="btn btn-primary btn" onclick="getProfile()">Profile</button>
-			<button class="btn btn-primary btn" onclick="getFriends()">My Friends</button>
+			<button class="btn btn-sm btn-primary" onclick="getProfile()">Profile</button>
+			<button class="btn btn-sm btn-primary" onclick="getFriends()">👥 My Friends</button>
+			<button id="logout" class="btn btn-sm btn-danger">Logout</button>
 			<div class="custom-control custom-switch">
 				<input type="checkbox" class="custom-control-input" id="connect">
 				<label class="custom-control-label" for="connect">Subscribe</label>
+			</div>
+
+			<!-- Activity of other users -- only visible if user is connected to socket(requires login) -->
+			<div id="social-indicators" class="social row d-none">
+				<div class="col" id="connected-users">
+					<span id="num-connected-users">(<span class="value"></span>)</span>
+					<ul id="connected-users-list" class="list-group"></ul>
+				</div>
+				<em class="col"><span id="typing-indicator"><span class="value"></span></span></em>
 			</div>
 		</div>
 	</nav>
@@ -59,7 +66,8 @@
 	<!-- Main chat component -- only visible if user is connected over socket(requires login) -->
 	<div id="chat" class="social d-none">
 		<ul id="msgs" class="list-group"></ul>
-		<input id="broadcast" class="form-control form-control-md fixed-bottom p-3 rounded" type="text" placeholder="Type something...." />
+		<input id="broadcast" class="form-control form-control-md fixed-bottom p-3 rounded border border-primary" type="text"
+		       placeholder="Type something...." />
 	</div>
 
 	<!-- New incoming chat message template -->
@@ -71,7 +79,7 @@
 						<kbd class="chat-message-item text-capitalize chat-message-src-user"></kbd>
 					</div>
 					<div class="col-4">
-						<em class="chat-message-item chat-message-timestamp text-muted">just now</em>
+						<em class="chat-message-item chat-message-timestamp text-muted"></em>
 					</div>
 					<div class="col"><span class="chat-message-likes-count">0</span></div>
 				</div>
@@ -98,6 +106,17 @@
 			<small class="text-muted">just now</small>
 		</div>
 	</div>
+
+	<!-- Connected user popover template -->
+	<ul class="d-none list-group">
+		<div id="online-user-template" class="list-group-item online-user container">
+			<div class="row">
+				<div class="col-3 online-username"></div>
+				<div class="col-8 connected-at-time text-muted"></div>
+				<div class="dot online-user-connection-status"></div>
+			</div>
+		</div>
+	</ul>
 
 	<script src="javascripts/me-controller.js"></script>
 	<script src="javascripts/subscribe-notifications.js"></script>

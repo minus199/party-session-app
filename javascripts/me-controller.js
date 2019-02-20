@@ -3,6 +3,7 @@
   const pword = document.querySelector("#login-password");
 
   document.querySelector("#do-login").addEventListener("click", login);
+  document.querySelector("#logout").addEventListener("click", logout);
 
   function login() {
     const auth = `Basic ${btoa(`${uname.value}:${pword.value}`)}`;
@@ -11,10 +12,18 @@
     return fetch(route("login"), {
       method: "POST",
       headers: new Headers({
-        Authorization: auth
+        Authorization: auth,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       })
     }).then(setContent);
   }
+}
+
+function logout() {
+  fetch(route("logout"), {
+    method: "POST"
+  }).then(() => location.reload()); // we dont want to leave sensitive data(like messages and any activity of logdedin user) in the dom after logout
 }
 
 {

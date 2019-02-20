@@ -1,3 +1,4 @@
+//TODO: Change the user status to 'away' after 20 seconds of inactivity
 {
 	class SocketEvent {
 		constructor(username, type, content) {
@@ -28,7 +29,12 @@
 
 	const $inputBroadcast = document.querySelector("#broadcast");
 	const $subscribeToggle = document.querySelector("#connect");
-	const $connectedClients = document.querySelector("#connected-clients");
+
+	const $onlineUserTemplate = document.querySelector("#online-user-template");
+	const $onlineUsersContainer = document.querySelector("#connected-users-list");
+	const $numConnectedClients = document.querySelector("#num-connected-users");
+	$($onlineUsersContainer).toggle("slide")
+	$numConnectedClients.addEventListener("click", () => $($onlineUsersContainer).toggle("slide"))
 
 	const $eTemplate = document.querySelector("#incoming-msg-template");
 	const $chatMsgsContainer = document.querySelector("#msgs");
@@ -41,23 +47,41 @@
 		$currentToast.classList.remove("d-none");
 		$currentToast.removeAttribute("id");
 		$(".chat-notification-content", $($currentToast)).text(infoMsg)
-		$($currentToast).prependTo($chatToastsContainer)
+		$($currentToast).appendTo($chatToastsContainer)
 			.toast('show')
 			.on('hidden.bs.toast', () => $currentToast.remove());
 	}
 
+	const $logoutButton = document.querySelector("#logout");
+
 	let disconnect = null;
-	const toggleConnection = function () {
+	$subscribeToggle.addEventListener("change", function toggleConnection() {
 		if (this.checked && disconnect === null) {
 			disconnect = connect();
+			$logoutButton.addEventListener("click", disconnect);
 			return;
 		}
 
 		if (typeof disconnect === "function") {
 			disconnect();
+			$logoutButton.removeEventListener("click", disconnect);
 		}
-	}
-	$subscribeToggle.addEventListener("change", toggleConnection);
+	});
+
+	/* since we clear the container each time, we need to cancel all existing timers */
+	const updateTimeStampOnlineUsersTimers = [];
+	const newUserOnline = u => {
+		const $onlineUser = $onlineUserTemplate.cloneNode(true);
+		$onlineUser.classList.remove("d-none");
+		$onlineUser.querySelector(".online-username").innerText = u;
+		$onlineUser.querySelector(".online-user-connection-status").classList.add("online-indicator");
+		const $timestamp = $onlineUser.querySelector(".connected-at-time");
+		$timestamp.innerText = `Just now!`;
+		const connectedAt = Date.now(); //TODO: Get connection/disconnection time from server.
+		const timer = setInterval(() => ($timestamp.innerText = moment(connectedAt).fromNow()), 10000);
+		updateTimeStampOnlineUsersTimers.push(timer);
+		$onlineUsersContainer.append($onlineUser);
+	};
 
 	const newIncomingUserMessage = function (socket, data) {
 		//TODO: Likes counter per message. Users are only allowed to like msgs of other users.
@@ -70,6 +94,7 @@
 		$likes.innerText = data.likedCount;
 
 		const $timestamp = $msgItem.querySelector(".chat-message-timestamp");
+		$timestamp.innerText = moment(data.timestamp).fromNow();
 		setInterval(() => ($timestamp.innerText = moment(data.timestamp).fromNow()), 10000);
 
 		$chatMsgsContainer.prepend($msgItem); //its important to attach the event listeners only after appending to dom.
@@ -94,7 +119,7 @@
 		if (e.keyCode === 13) {
 			//TODO: validate message content
 			new SocketEvent(sessionData.userName, SocketEvent.Events.USER_NEW_MSG, this.value).dispatch(socket);
-			this.value = "";
+			this.value = ""; // clear the current value from the message input(same as in msgging apps)
 			return;
 		}
 
@@ -113,6 +138,7 @@
 
 		typingTimer = setTimeout(() => {
 			// end the "is typing" after interval of inactivity
+			//TODO: What if the client drops the connection before the TYPING_TIMER_DELAY is over? handle it from the server
 			activeTypingEvent.content.inProgress = false;
 			activeTypingEvent.dispatch(socket);
 			activeTypingEvent = null;
@@ -120,15 +146,24 @@
 	};
 
 	function connect() {
-		const socket = new WebSocket(mainEndpoint);
+		if (disconnect !== null){
+			console.info("Tried to connect when socket is already open. Returning existing disconnect hook.")
+			return disconnect;
+		}
 
+		const socket = new WebSocket(mainEndpoint);
 		// Listen for messages
 		socket.addEventListener("message", e => {
 			const rawIncomingEvent = JSON.parse(e.data);
 
 			if (rawIncomingEvent.whosOnline) {
-				$connectedClients.querySelector(".value").innerText = rawIncomingEvent.whosOnline.length;
-				$connectedClients.dataset.content = rawIncomingEvent.whosOnline.join(", ");
+				$numConnectedClients.querySelector(".value").innerText = rawIncomingEvent.whosOnline.length;
+
+				//Clear previous timers and elements
+				$onlineUsersContainer.innerHTML = "";
+				updateTimeStampOnlineUsersTimers.forEach(clearTimeout);
+				//Create html elements for all connected users
+				rawIncomingEvent.whosOnline.forEach(newUserOnline);
 			}
 
 			if (rawIncomingEvent.type === SocketEvent.Events.USER_ONLINE) {
@@ -140,12 +175,14 @@
 			}
 
 			if (rawIncomingEvent.type === SocketEvent.Events.USER_TYPING) {
+				// shows the "user is typing" message at the nav bar
 				$typingIndicator.querySelector(".value").innerText = rawIncomingEvent.payload.inProgress ? `${rawIncomingEvent.client} is typing...` : '';
 				$typingIndicator.classList.toggle("d-none", !rawIncomingEvent.payload.inProgress);
 			}
 
 			if (rawIncomingEvent.type === SocketEvent.Events.USER_NEW_MSG) {
 				const $msgItem = newIncomingUserMessage(socket, rawIncomingEvent);
+				// this will scroll to top when a new msg comes in
 				window.scroll({
 					top: $msgItem.getBoundingClientRect().top + window.scrollY - 10,
 					behavior: 'smooth'
@@ -155,6 +192,7 @@
 			}
 
 			if (rawIncomingEvent.type === SocketEvent.Events.RECENT_MESSAGES) {
+				//load all recent events
 				$chatMsgsContainer.innerHTML = ""; // clear previous elements and recreate
 				rawIncomingEvent.payload.forEach(recentEvent => newIncomingUserMessage(socket, recentEvent))
 			}
@@ -168,19 +206,18 @@
 				// const $likedCommentLikesContainer = $msgsContainer.querySelector(`[data-uuid='${data.payload.comment_id}'] .chat-message-likes-count`);
 				// Or select if from the liked comment
 				// const $likedCommentLikesContainer = $likedComment.querySelector(".chat-message-likes-count")
-				if ($likedComment) {
-					$likedComment.querySelector(".chat-message-likes-count").innerText = rawIncomingEvent.likedCount;
-					newToast(`You now have ${rawIncomingEvent.likedCount} likes on your comment.`);
-					$likedComment.classList.add("glow-one");
-					window.scroll({
-						top: $likedComment.getBoundingClientRect().top + window.scrollY - 200,
-						behavior: 'smooth'
-					});
-					setTimeout(() => $likedComment.classList.remove("glow-one"), 3000);
-					//TODO: Server should know the amount of likes on each comment
-					//TODO: Let the user know someone liked the comment(`Hey, ${currentUser.username}! ${data.payload.from_user} liked your message!`)
-					// $likedCommentLikesContainer.innerText = numOfLikesFromServer;
-				}
+				if (!$likedComment) return; // nothing to do
+				$likedComment.querySelector(".chat-message-likes-count").innerText = rawIncomingEvent.likedCount;
+				newToast(`You now have ${rawIncomingEvent.likedCount} likes on your comment.`);
+				$likedComment.classList.add("glow-one"); // this will make the liked comment glow
+				window.scroll({ // will scroll to the liked comment
+					top: $likedComment.getBoundingClientRect().top + window.scrollY - 200,
+					behavior: 'smooth'
+				});
+				setTimeout(() => $likedComment.classList.remove("glow-one"), 3000); // stop glowing after 3 secs
+				//TODO: Server should know the amount of likes on each comment
+				//TODO: Let the user know someone liked the comment(`Hey, ${currentUser.username}! ${data.payload.from_user} liked your message!`)
+				// $likedCommentLikesContainer.innerText = numOfLikesFromServer;
 			}
 		});
 
@@ -202,7 +239,7 @@
 		socket.addEventListener("close", socketShutdown);
 		socket.addEventListener("error", socketShutdown);
 
-		return () => {
+		return disconnect = () => {
 			socket.close();
 			disconnect = null;
 		}
