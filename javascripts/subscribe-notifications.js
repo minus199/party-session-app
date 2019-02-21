@@ -1,4 +1,5 @@
 //TODO: Change the user status to 'away' after 20 seconds of inactivity
+//TODO: The list of messages can get pretty long. Use lazy loading. show only the most recent 30 messages, and fetch as needed when the user scrolls further back in the history.
 {
 	class SocketEvent {
 		constructor(type, content) {
@@ -14,6 +15,7 @@
 		}
 	}
 
+	//TODO: allow the client to ask the server what events types exists.
 	SocketEvent.Events = Object.freeze({
 		USER_ONLINE: "USER_ONLINE",
 		USER_OFFLINE: "USER_OFFLINE",
@@ -70,6 +72,7 @@
 		$onlineUsersContainer.append($onlineUser);
 	};
 
+	// This will handle the event that another user sent a message
 	const newIncomingUserMessage = function (socket, data) {
 		//TODO: Likes counter per message. Users are only allowed to like chat-msgs of other users.
 		const $msgItem = $incomingMsgTemplate.cloneNode(true);
@@ -97,10 +100,10 @@
 			});
 		}
 
-		$msgItem.classList.remove("d-none");
 		return $msgItem;
 	};
 
+	// here we are handling the current user sending a message to all other users
 	const TYPING_TIMER_DELAY = 350;
 	let typingTimer = null;
 	let activeTypingEvent = null;

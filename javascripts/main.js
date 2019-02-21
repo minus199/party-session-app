@@ -42,7 +42,7 @@ setInterval(() => {
             $el.classList.add(currentStyleClass); // this will make the element glow
             if (scrollToEl) {
                 window.scroll({ // will scroll to the liked comment
-                    top: $el.getBoundingClientRect().top + window.scrollY - 100,
+                    top: $el.getBoundingClientRect().top + window.scrollY - 130,
                     behavior: 'smooth'
                 });
             }

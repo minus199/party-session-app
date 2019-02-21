@@ -34,28 +34,40 @@
 	<div id="chat-toasts"></div>
 
 	<!-- Top menu - only shown if user is logged in -->
-	<!-- <div  class="d-none fixed-top container-fluid"> -->
-	<nav id="menu" class="d-none container-fluid navbar navbar-expand-lg navbar-light bg-light">
-		<h1 id="online-user" class="display-4"><span class="online-user-name"></span></h1>
-
-		<div>
-			<button class="btn btn-sm btn-primary" onclick="getProfile()">Profile</button>
-			<button class="btn btn-sm btn-primary" onclick="getFriends()">👥 My Friends</button>
-			<button id="logout" class="btn btn-sm btn-danger">Logout</button>
-			<div class="custom-control custom-switch">
-				<input type="checkbox" class="custom-control-input" id="connect">
-				<label class="custom-control-label" for="connect">Subscribe</label>
+	<nav id="menu" class="container-fluid d-none sticky-top navbar-expand-lg navbar-light bg-light">
+		<div class="row align-items-center justify-content-start">
+			<div class="col">
+				<p id="online-user" class="display-4"></p>
 			</div>
+			<div class="col col-xl-8">
+				<div class="row">
+					<div class="col custom-control custom-switch">
+						<input type="checkbox" class="custom-control-input" id="connect">
+						<label class="custom-control-label" for="connect">Subscribe</label>
+					</div>
 
-			<!-- Activity of other users -- only visible if user is connected to socket(requires login) -->
-			<div id="social-indicators" class="social row d-none">
-				<div id="connected-users" class="col-4">
-					<span id="num-connected-users">(<span class="value"></span>)</span>
-					<ul id="connected-users-list" class="list-group contains-timestamps"></ul>
+					<!-- Activity of other users -- only visible if user is connected to socket(requires login) -->
+					<div id="connected-users" class="col">
+						<div id="num-connected-users">(<span class="value"></span>)</div>
+						<ul id="connected-users-list" class="list-group contains-timestamps shadow"></ul>
+					</div>
+
+					<div class="social col">
+						<em><span id="typing-indicator"><span class="value"></span></span></em>
+					</div>
+
 				</div>
-				<em class="col"><span id="typing-indicator"><span class="value"></span></span></em>
 			</div>
 		</div>
+
+		<div class="row justify-content-start">
+			<div class="col"><button class="btn btn-sm btn-primary form-control form-control-sm" onclick="getProfile()">Profile</button></div>
+			<div class="col"><button class="btn btn-sm btn-primary form-control form-control-sm" onclick="getFriends()">Friends</button></div>
+			<div class="col"><button id="logout" class="btn btn-sm btn-danger form-control form-control-sm">Logout</button></div>
+
+
+		</div>
+
 	</nav>
 
 	<!-- Main chat component -- only visible if user is connected over socket(requires login) -->

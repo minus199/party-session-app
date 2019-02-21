@@ -1,22 +1,27 @@
-body {
-  padding-bottom: 100px;
+@-ms-viewport {
+  width: device-width;
 }
 
-div#login-form {
+body {
+  padding-bottom: 25px;
+}
+
+#login-form {
   margin-top: 50px;
 }
 
 #menu {
   background: white;
   box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
-  position: fixed;
-  z-index: 1;
 }
 
-div#chat {
+#menu button {
+  margin: 0 0 5px 0;
+}
+
+#chat {
   position: relative;
-  top: 100px;
-  margin-bottom: 50px;
+  margin-bottom: 25px;
 }
 
 #chat-toasts {
@@ -28,7 +33,7 @@ div#chat {
 
 #typing-indicator {
   color: tomato;
-  font-size: 1.3rem;
+  font-size: 0.9rem;
 }
 
 .chat-message-likes-count {
@@ -47,33 +52,30 @@ div#chat {
   font-size: 0.8rem;
 }
 
-#social-indicators {
-  width: 250px;
-}
-
-#social-indicators .value {
-  font-size: 0.8em;
-}
-
-
 #connected-users {
-  /* position: absolute; */
-  /* right: 20px; */
-  /* top: 80px; */
   z-index: 1;
   opacity: 0.2;
   transition: opacity .35s ease-in-out;
   -moz-transition: opacity .35s ease-in-out;
   -webkit-transition: opacity .35s ease-in-out;
   max-width: fit-content;
+  position: absolute;
+  right: 0;
 }
 
 #connected-users-list {
-  position: fixed;
+  position: relative;
+  min-width: fit-content;
 }
 
 #connected-users:hover {
   opacity: 1;
+}
+
+#num-connected-users {
+  position: relative;
+  float: right;
+  margin-left: 10px;
 }
 
 #num-connected-users::before {
