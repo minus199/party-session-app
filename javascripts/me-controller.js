@@ -16,14 +16,18 @@
         Accept: 'application/json',
         'Content-Type': 'application/json',
       })
-    }).then(setContent);
+    }).then(setContent).catch(reason => window.partySessionApp.toast(reason.message));
   }
 }
 
 function logout() {
   fetch(route("logout"), {
-    method: "POST"
-  }).then(() => location.reload()); // we dont want to leave sensitive data(like messages and any activity of logdedin user) in the dom after logout
+      method: "POST"
+    }).then(() => {
+      location.reload();
+      localStorage.removeItem("session_data");
+    }) // we dont want to leave sensitive data(like messages and any activity of logdedin user) in the dom after logout
+    .catch(reason => window.partySessionApp.toast(reason.message));
 }
 
 {
@@ -32,11 +36,11 @@ function logout() {
 
   function setContent() {
     getSessionData().then(sessData => {
+      localStorage.setItem("session_data", JSON.stringify(sessData));
       if (sessData.isLoggedIn) {
         document.querySelector("#online-user").innerText = `Hello, ${sessData.userName}`
         $loginForm.classList.add("d-none");
         $menu.classList.remove("d-none");
-        localStorage.setItem("session_data", JSON.stringify(sessData));
       } else {
         $loginForm.classList.remove("d-none");
         $menu.classList.add("d-none");

@@ -1,3 +1,7 @@
+body {
+  padding-bottom: 100px;
+}
+
 div#login-form {
   margin-top: 50px;
 }
@@ -5,16 +9,18 @@ div#login-form {
 #menu {
   background: white;
   box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
+  position: fixed;
+  z-index: 1;
 }
 
 div#chat {
   position: relative;
-  top: 25px;
+  top: 100px;
   margin-bottom: 50px;
 }
 
 #chat-toasts {
-  position: absolute;
+  position: fixed;
   bottom: 50;
   right: 50;
   z-index: 1;
@@ -22,6 +28,7 @@ div#chat {
 
 #typing-indicator {
   color: tomato;
+  font-size: 1.3rem;
 }
 
 .chat-message-likes-count {
@@ -104,7 +111,7 @@ span.chat-message-main-content {
 }
 
 .chat-message-timestamp,
-.connected-at-time {
+.connected-at-timestamp {
   font-size: 0.7rem;
   /* padding: 10px; */
   min-width: fit-content;
@@ -118,37 +125,37 @@ span.chat-message-main-content {
 
 @keyframes glowing-one {
   0% {
-    box-shadow: 0 0 -10px #c4a300;
+    box-shadow: 0 0 -1px #c4a300;
   }
 
   40% {
-    box-shadow: 0 0 20px #c4a300;
+    box-shadow: 0 0 10px #c4a300;
   }
 
   60% {
-    box-shadow: 0 0 20px #c4a300;
+    box-shadow: 0 0 10px #c4a300;
   }
 
   100% {
-    box-shadow: 0 0 -10px #c4a300;
+    box-shadow: 0 0 -1px #c4a300;
   }
 }
 
 @keyframes glowing-two {
   0% {
-    box-shadow: 0 0 -10px #007bff;
+    box-shadow: 0 0 -1px #007bff;
   }
 
   40% {
-    box-shadow: 0 0 20px #007bff;
+    box-shadow: 0 0 10px #007bff;
   }
 
   60% {
-    box-shadow: 0 0 20px #007bff;
+    box-shadow: 0 0 10px #007bff;
   }
 
   100% {
-    box-shadow: 0 0 -10px #007bff;
+    box-shadow: 0 0 -1px #007bff;
   }
 }
 
